@@ -28,8 +28,9 @@ definition(
 )
 
 preferences {
-	page(name: "cameraDiscovery", title:"Foscam Camera Setup", content:"cameraDiscovery")
-	page(name: "loginToFoscam", title: "Foscam Login")
+	page(name: "loginToIPCamera", title: "IPCamera Login")
+	page(name: "cameraDiscovery", title:"IPCamera Viewer Setup", content:"cameraDiscovery")
+	
 }
 
 //PAGES
@@ -55,15 +56,15 @@ def cameraDiscovery()
 			discoverCameras()
 		}
 
-		return dynamicPage(name:"cameraDiscovery", title:"Discovery Started!", nextPage:"loginToFoscam", refreshInterval:refreshInterval, uninstall: true) {
-			section("Please wait while we discover your Foscam. Discovery can take five minutes or more, so sit back and relax! Select your device below once discovered.") {
-				input "selectedFoscam", "enum", required:false, title:"Select Foscam (${numFound} found)", multiple:true, options:options
+		return dynamicPage(name:"cameraDiscovery", title:"Discovery Started!", refreshInterval:refreshInterval, uninstall: true) {
+			section("Please wait while we discover your cameras. Discovery can take five minutes or more, so sit back and relax! Select your device below once discovered.") {
+				input "selectedCameras", "enum", required:false, title:"Select Cameras (${numFound} found)", multiple:true, options:options
 			}
 		}
 	}
 	else
 	{
-		def upgradeNeeded = """To use Foscam, your Hub should be completely up to date.
+		def upgradeNeeded = """To use Cameras, your Hub should be completely up to date.
 
 		To update your Hub, access Location Settings in the Main Menu (tap the gear next to your location name), select your Hub, and choose "Update Hub"."""
 
@@ -76,12 +77,13 @@ def cameraDiscovery()
 	}
 }
 
-def loginToFoscam() {
+def loginToIPCamera() {
 	def showUninstall = username != null && password != null
-	return dynamicPage(name: "loginToFoscam", title: "Foscam", uninstall:showUninstall, install:true,) {
-		section("Log in to Foscam") {
-			input "username", "text", title: "Username", required: true, autoCorrect:false
+	return dynamicPage(name: "loginToIPCamera", title: "IPCamera", nextPage:"cameraDiscovery", uninstall:showUninstall, install:true,) {
+		section("Log in to IPCamera") {
+			input "username", "text", title: "Username", required: true, default: "viewer", autoCorrect:false
 			input "password", "password", title: "Password", required: true, autoCorrect:false
+            input "ipaddress", "string", title: "IPAddress", required: true, default: "your IP", autoCorrect:false
 		}
 	}
 }
